@@ -6,16 +6,29 @@ function formatPrice(value) {
   }).format(value);
 }
 
-export default function SellerOfferCard({ offer, highlight }) {
+export default function SellerOfferCard({ offer, highlight, isSelected, onSelectSeller }) {
   return (
     <article
-      className={`rounded-3xl border p-5 transition ${
-        highlight
-          ? "border-indigo-300 bg-indigo-50 shadow-lg shadow-indigo-100"
-          : "border-slate-200 bg-white"
+      className={`relative rounded-3xl border p-5 transition ${
+        isSelected
+          ? "border-2 border-blue-600 bg-white shadow-md shadow-blue-100/80"
+          : highlight
+            ? "border-indigo-300 bg-indigo-50 shadow-lg shadow-indigo-100"
+            : "border-slate-200 bg-white"
       }`}
     >
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      {isSelected ? (
+        <div
+          className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 text-white shadow-md ring-2 ring-white"
+          aria-label="Selected seller"
+        >
+          <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+      ) : null}
+
+      <div className={`flex flex-wrap items-start justify-between gap-4 ${isSelected ? "pr-12 sm:pr-14" : ""}`}>
         <div>
           <div className="flex items-center gap-2">
             <h3 className="text-lg font-semibold text-slate-900">{offer.sellerName}</h3>
@@ -51,6 +64,7 @@ export default function SellerOfferCard({ offer, highlight }) {
 
       <button
         type="button"
+        onClick={() => onSelectSeller?.(offer)}
         className="mt-5 w-full rounded-2xl bg-indigo-600 px-4 py-3 font-medium text-white transition hover:bg-indigo-500"
       >
         Select this seller

@@ -15,6 +15,11 @@ export default function ProductPage() {
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
   const [status, setStatus] = useState("loading");
+  const [selectedOffer, setSelectedOffer] = useState(null);
+
+  useEffect(() => {
+    setSelectedOffer(null);
+  }, [productId]);
 
   useEffect(() => {
     let active = true;
@@ -66,8 +71,8 @@ export default function ProductPage() {
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <Link to="/" className="text-sm text-indigo-600 transition hover:text-indigo-500">
-       Back to catalog
+      <Link to="/products" className="text-sm text-indigo-600 transition hover:text-indigo-500">
+       Back to Products Page
       </Link>
 
       <section className="mt-6 grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
@@ -149,9 +154,57 @@ export default function ProductPage() {
               key={offer.id}
               offer={offer}
               highlight={offer.price === bestPrice}
+              isSelected={selectedOffer?.id === offer.id}
+              onSelectSeller={setSelectedOffer}
             />
           ))}
         </div>
+
+        {selectedOffer ? (
+          <div className="mt-8 rounded-[2rem] border border-indigo-200 bg-indigo-50/60 p-7 shadow-sm shadow-indigo-100">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <h3 className="text-xl font-semibold text-slate-900">Choose payment method</h3>
+                <p className="mt-2 text-sm text-slate-600">
+                  Checkout with {selectedOffer.sellerName} · {formatPrice(selectedOffer.price)}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedOffer(null)}
+                className="text-sm font-medium text-indigo-600 transition hover:text-indigo-500"
+              >
+                Choose a different seller
+              </button>
+            </div>
+
+            <div className="mt-6 grid gap-4 sm:grid-cols-2">
+              <button
+                type="button"
+                className="rounded-3xl border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:border-indigo-300 hover:shadow-md"
+              >
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600">
+                  Stripe
+                </p>
+                <p className="mt-2 text-lg font-semibold text-slate-900">Card payment</p>
+                <p className="mt-2 text-sm text-slate-600">Pay securely with debit or credit card via Stripe.</p>
+              </button>
+
+              <button
+                type="button"
+                className="rounded-3xl border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:border-indigo-300 hover:shadow-md"
+              >
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600">
+                  Crypto
+                </p>
+                <p className="mt-2 text-lg font-semibold text-slate-900">Cryptocurrency</p>
+                <p className="mt-2 text-sm text-slate-600">
+                  Bitcoin (BTC), Ethereum (ETH), and Tether (USDT) supported.
+                </p>
+              </button>
+            </div>
+          </div>
+        ) : null}
       </section>
     </main>
   );

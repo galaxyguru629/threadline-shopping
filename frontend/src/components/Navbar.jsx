@@ -29,12 +29,12 @@ export default function Navbar() {
           </div>
 
           <nav className="flex items-center gap-2">
-            <a
-              href="#"
+            <Link
+              to="/products"
               className="rounded-lg bg-gray-300 px-3 py-2 text-xs font-semibold text-white transition hover:bg-gray-400"
             >
               Sell now
-            </a>
+            </Link>
           </nav>
         </div>
 
