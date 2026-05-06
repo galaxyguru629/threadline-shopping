@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import SellerOfferCard from "../components/SellerOfferCard";
 import { fetchProduct } from "../lib/api";
-
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 function formatPrice(value) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -16,9 +16,11 @@ export default function ProductPage() {
   const [product, setProduct] = useState(null);
   const [status, setStatus] = useState("loading");
   const [selectedOffer, setSelectedOffer] = useState(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   useEffect(() => {
     setSelectedOffer(null);
+    setSelectedImageIndex(0);
   }, [productId]);
 
   useEffect(() => {
@@ -71,7 +73,8 @@ export default function ProductPage() {
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <Link to="/products" className="text-sm text-indigo-600 transition hover:text-indigo-500">
+      <Link to="/products" className="flex items-center gap-2 text-sm text-indigo-600 transition hover:text-indigo-500">
+        <ArrowLeftIcon className="h-4 w-4" />
        Back to Products Page
       </Link>
 
@@ -79,20 +82,26 @@ export default function ProductPage() {
         <div className="space-y-4">
           <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white">
             <img
-              src={product.images[0]}
+              src={product.images[selectedImageIndex]}
               alt={product.name}
               className="aspect-[4/5] w-full object-cover"
             />
           </div>
 
           <div className="grid grid-cols-3 gap-4">
-            {product.images.slice(1).map((image) => (
-              <div
+            {product.images.map((image, index) => (
+              <button
                 key={image}
-                className="overflow-hidden rounded-3xl border border-slate-200 bg-white"
+                type="button"
+                onClick={() => setSelectedImageIndex(index)}
+                className={`overflow-hidden rounded-3xl border bg-white transition ${
+                  selectedImageIndex === index
+                    ? "border-indigo-500 ring-2 ring-indigo-200"
+                    : "border-slate-200 hover:border-indigo-300"
+                }`}
               >
                 <img src={image} alt={product.name} className="aspect-[4/5] w-full object-cover" />
-              </div>
+              </button>
             ))}
           </div>
         </div>

@@ -1,8 +1,10 @@
+const path = require("path");
 const express = require("express");
 const cors = require("cors");
-require("dotenv").config();
+require("dotenv").config({ path: path.join(__dirname, "..", ".env") });
 const { connectToDatabase } = require("./db");
 const { seedProductsIfNeeded } = require("./seedProducts");
+const memoryCatalog = require("./memoryCatalog");
 const Product = require("./models/Product");
 const Category = require("./models/Category");
 const Variant = require("./models/Variant");
@@ -11,7 +13,9 @@ const Listing = require("./models/Listing");
 const ListingImage = require("./models/ListingImage");
 
 const app = express();
-const PORT = 5000;
+const PORT = Number(process.env.PORT) || 5000;
+
+let useMemoryCatalog = false;
 
 app.use(cors());
 app.use(express.json());
@@ -40,6 +44,11 @@ function mapSummaryFromRelations(product, categoryName, images, listings) {
 }
 
 app.get("/api/products", (_request, response) => {
+  if (useMemoryCatalog) {
+    response.json(memoryCatalog.getList());
+    return;
+  }
+
   Product.find({})
     .lean()
     .then(async (products) => {
@@ -102,6 +111,18 @@ app.get("/api/products", (_request, response) => {
 });
 
 app.get("/api/products/:productId", (request, response) => {
+  if (useMemoryCatalog) {
+    const payload = memoryCatalog.getById(request.params.productId);
+
+    if (!payload) {
+      response.status(404).json({ message: "Product not found." });
+      return;
+    }
+
+    response.json(payload);
+    return;
+  }
+
   Product.findOne({ id: request.params.productId })
     .lean()
     .then(async (product) => {
@@ -163,14 +184,18 @@ async function startServer() {
   try {
     await connectToDatabase();
     await seedProductsIfNeeded();
-
-    app.listen(PORT, () => {
-      console.log(`Backend API running on http://localhost:${PORT}`);
-    });
+    console.log("Using MongoDB for catalog data.");
   } catch (error) {
-    console.error("Failed to start backend server:", error.message);
-    process.exit(1);
+    useMemoryCatalog = true;
+    console.warn(
+      "MongoDB unavailable — serving catalog from in-memory seed data.",
+      `(${error.message})`
+    );
   }
+
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Backend API running on http://localhost:${PORT}`);
+  });
 }
 
 startServer();

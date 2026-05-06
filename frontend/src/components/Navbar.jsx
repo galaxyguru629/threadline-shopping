@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 const topCategories = [
   "Women",
@@ -7,6 +8,21 @@ const topCategories = [
 ];
 
 export default function Navbar() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
+
+  const handleSearchSubmit = (event) => {
+    event.preventDefault();
+    const term = searchTerm.trim();
+
+    if (!term) {
+      navigate("/products");
+      return;
+    }
+
+    navigate(`/products?search=${encodeURIComponent(term)}`);
+  };
+
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/85 backdrop-blur">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -18,14 +34,19 @@ export default function Navbar() {
           </Link>
 
           <div className="flex-1">
-            <div className="flex items-center rounded-xl border border-slate-300 bg-white px-3 py-2 shadow-sm">
+            <form
+              onSubmit={handleSearchSubmit}
+              className="flex items-center rounded-xl border border-slate-300 bg-white px-3 py-2 shadow-sm"
+            >
               <span className="text-sm text-slate-400">Q</span>
               <input
                 type="text"
                 placeholder="Search for items"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
                 className="ml-2 w-full border-none bg-transparent text-sm text-slate-700 outline-none"
               />
-            </div>
+            </form>
           </div>
 
           <nav className="flex items-center gap-2">

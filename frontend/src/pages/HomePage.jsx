@@ -8,7 +8,7 @@ export default function HomePage() {
     <main className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
       <section className="relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
         <img src={heroImagePath} alt="Fashion marketplace hero" className="h-[400px] w-full object-cover sm:h-[600px]" />
-        <div className="absolute inset-0 bg-slate-900/20" />
+        {/* <div className="absolute inset-0 bg-slate-900/20" /> */}
 
         <div className="absolute left-6 top-1/2 z-10 w-full max-w-sm -translate-y-1/3  p-5">
           <h1 className="text-4xl text-white font-bold text-slate-900">Ready to declutter your closet?</h1>

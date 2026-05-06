@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import FilterBar from "./FilterBar";
 import ProductCard from "./ProductCard";
 import { fetchProducts } from "../lib/api";
@@ -11,6 +12,7 @@ const initialFilters = {
 };
 
 export default function ProductCatalog({ topSpacingClass = "mt-8" }) {
+  const [searchParams] = useSearchParams();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [filters, setFilters] = useState(initialFilters);
@@ -42,14 +44,20 @@ export default function ProductCatalog({ topSpacingClass = "mt-8" }) {
     };
   }, []);
 
+  useEffect(() => {
+    const searchFromQuery = searchParams.get("search") ?? "";
+    setFilters((current) => ({ ...current, search: searchFromQuery }));
+  }, [searchParams]);
+
   const visibleProducts = useMemo(() => {
     return products
       .filter((product) => {
+        const normalizedSearch = filters.search.toLowerCase();
         const matchesSearch =
           filters.search === "" ||
-          `${product.name} ${product.brand} ${product.shortDescription}`
+          `${product.name} ${product.brand} ${product.shortDescription} ${product.category}`
             .toLowerCase()
-            .includes(filters.search.toLowerCase());
+            .includes(normalizedSearch);
 
         const matchesCategory =
           filters.category === "all" || product.category === filters.category;

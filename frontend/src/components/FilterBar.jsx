@@ -15,7 +15,7 @@ export default function FilterBar({
             type="text"
             value={filters.search}
             onChange={(event) => onSearchChange(event.target.value)}
-            placeholder="Sneakers, hoodie, denim..."
+            placeholder="Shoes, bags, clothes..."
             className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none ring-0 transition focus:border-indigo-400"
           />
         </label>
