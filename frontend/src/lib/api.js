@@ -37,7 +37,7 @@ export function clearStoredToken() {
 }
 
 async function request(path, options = {}) {
-  const response = await fetch(`${getApiBaseUrl()}${path}`, options);
+  const response = await fetch(`${API_BASE_URL}${path}`, options);
 
   if (!response.ok) {
     const data = await parseJsonSafe(response);
@@ -62,7 +62,7 @@ async function authJson(path, options = {}) {
     headers.Authorization = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${getApiBaseUrl()}${path}`, {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
     headers,
   });
