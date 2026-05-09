@@ -11,6 +11,7 @@ const Variant = require("./models/Variant");
 const ProductImage = require("./models/ProductImage");
 const Listing = require("./models/Listing");
 const ListingImage = require("./models/ListingImage");
+const authService = require("./services/authService");
 
 const app = express();
 const PORT = Number(process.env.PORT) || 5000;
@@ -20,8 +21,74 @@ let useMemoryCatalog = false;
 app.use(cors());
 app.use(express.json());
 
+app.use((_request, response, next) => {
+  response.setHeader("X-ThreadLine-API", "threadline-marketplace");
+  next();
+});
+
 app.get("/api/health", (_request, response) => {
   response.json({ ok: true });
+});
+
+app.get("/api/auth", (_request, response) => {
+  response.json({
+    ok: true,
+    message: "Auth routes are mounted on this server.",
+    endpoints: ["POST /api/auth/register", "POST /api/auth/login", "GET /api/auth/me"],
+  });
+});
+
+function sendAuthError(response, error) {
+  const status = error.status || 500;
+  const message = status === 500 ? "Something went wrong." : error.message;
+  response.status(status).json({ message });
+}
+
+app.post("/api/auth/register", async (request, response) => {
+  try {
+    const { email, password, name } = request.body || {};
+    const result = await authService.register({ email, password, name });
+    response.status(201).json(result);
+  } catch (error) {
+    sendAuthError(response, error);
+  }
+});
+
+app.post("/api/auth/login", async (request, response) => {
+  try {
+    const { email, password } = request.body || {};
+    const result = await authService.login({ email, password });
+    response.json(result);
+  } catch (error) {
+    sendAuthError(response, error);
+  }
+});
+
+app.get("/api/auth/me", async (request, response) => {
+  const header = request.headers.authorization || "";
+  const token = header.startsWith("Bearer ") ? header.slice(7).trim() : null;
+
+  if (!token) {
+    response.status(401).json({ message: "Not signed in." });
+    return;
+  }
+
+  let payload;
+  try {
+    payload = authService.verifyToken(token);
+  } catch {
+    response.status(401).json({ message: "Session expired. Please sign in again." });
+    return;
+  }
+
+  const user = await authService.getUserById(payload.sub);
+
+  if (!user) {
+    response.status(401).json({ message: "Account not found." });
+    return;
+  }
+
+  response.json({ user });
 });
 
 function mapSummaryFromRelations(product, categoryName, images, listings) {
@@ -185,16 +252,20 @@ async function startServer() {
     await connectToDatabase();
     await seedProductsIfNeeded();
     console.log("Using MongoDB for catalog data.");
+    authService.setPersistenceEnabled(true);
   } catch (error) {
     useMemoryCatalog = true;
+    authService.setPersistenceEnabled(false);
     console.warn(
       "MongoDB unavailable — serving catalog from in-memory seed data.",
       `(${error.message})`
     );
+    console.warn("User accounts are stored in memory only until MongoDB is available (lost on restart).");
   }
 
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`Backend API running on http://localhost:${PORT}`);
+    console.log("Auth: POST /api/auth/register, POST /api/auth/login, GET /api/auth/me");
   });
 }
 

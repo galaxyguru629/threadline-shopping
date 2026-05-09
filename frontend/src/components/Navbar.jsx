@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const topCategories = [
   "Women",
@@ -8,6 +9,7 @@ const topCategories = [
 ];
 
 export default function Navbar() {
+  const { user, logout } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 
@@ -50,6 +52,40 @@ export default function Navbar() {
           </div>
 
           <nav className="flex items-center gap-2">
+            {user ? (
+              <>
+                <Link
+                  to="/account"
+                  className="hidden sm:flex items-center gap-2 max-w-[140px] truncate rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition hover:border-indigo-300"
+                  title={user.email}
+                >
+                  <img
+                    src="/src/assets/image/user.png"
+                    alt="User"
+                    className="w-5 h-5"
+                  />
+
+                  <span className="truncate">
+                    {user.name}
+                  </span>
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  to="/register"
+                  className="rounded-lg border border-cyan-600 bg-cyan-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-cyan-500"
+                >
+                  Register
+                </Link>
+              </>
+            )}
             <Link
               to="/products"
               className="rounded-lg bg-gray-300 px-3 py-2 text-xs font-semibold text-white transition hover:bg-gray-400"
