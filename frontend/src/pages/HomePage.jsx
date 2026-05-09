@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import ProductCatalog from "../components/ProductCatalog";
 
-const heroImagePath = "/src/assets/image/hero.jpg";
+import heroImagePath from "../assets/image/hero.jpg";
 
 export default function HomePage() {
   return (

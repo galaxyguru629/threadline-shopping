@@ -1,19 +1,4 @@
-/**
- * Talk to the backend on port 5000 using the same hostname as the page (localhost or LAN IP).
- * Relative "/api" + Vite proxy was returning 404 for some setups; direct URL avoids that.
- */
-export function getApiBaseUrl() {
-  const fromEnv = import.meta.env.VITE_API_BASE_URL;
-  if (fromEnv) {
-    return String(fromEnv).replace(/\/$/, "");
-  }
-  if (typeof window !== "undefined" && window.location?.hostname) {
-    const { hostname } = window.location;
-    return `http://${hostname}:5000/api`;
-  }
-  return "http://localhost:5000/api";
-}
-const TOKEN_STORAGE_KEY = "threadline_auth_token";
+const API_BASE_URL = "https://thread-shopping-backend-staging.up.railway.app/api";
 
 async function parseJsonSafe(response) {
   try {
