@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import SellerOfferCard from "../components/SellerOfferCard";
 import { fetchProduct } from "../lib/api";
@@ -17,6 +17,7 @@ export default function ProductPage() {
   const [status, setStatus] = useState("loading");
   const [selectedOffer, setSelectedOffer] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const sellersSection = useRef(null);
 
   useEffect(() => {
     setSelectedOffer(null);
@@ -108,7 +109,16 @@ export default function ProductPage() {
 
         <div className="space-y-6">
           <div className="rounded-[2rem] border border-slate-200 bg-white p-7 shadow-sm shadow-slate-100">
-            <p className="text-sm uppercase tracking-[0.3em] text-indigo-500">{product.brand}</p>
+            <div className="flex items-center justify-between gap-4">
+              <p className="text-sm uppercase tracking-[0.3em] text-indigo-500">{product.brand}</p>
+              <button
+                type="button"
+                onClick={() => sellersSection.current?.scrollIntoView({ behavior: "smooth" })}
+                className="rounded-full bg-indigo-600 px-6 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500"
+              >
+                Buy
+              </button>
+            </div>
             <h1 className="mt-3 text-4xl font-semibold text-slate-900">{product.name}</h1>
             <p className="mt-4 text-base leading-7 text-slate-600">{product.description}</p>
 
@@ -150,7 +160,7 @@ export default function ProductPage() {
       <section className="mt-10">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-semibold text-slate-900">Available sellers</h2>
+            <h2 ref={sellersSection} className="text-2xl font-semibold text-slate-900">Available sellers</h2>
             <p className="mt-2 text-sm text-slate-500">
               Choose the seller offer that matches the buyer's price and confidence needs.
             </p>
