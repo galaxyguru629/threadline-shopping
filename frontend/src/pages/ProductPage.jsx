@@ -76,7 +76,7 @@ export default function ProductPage() {
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <Link to="/products" className="flex items-center gap-2 text-sm text-indigo-600 transition hover:text-indigo-500">
         <ArrowLeftIcon className="h-4 w-4" />
-       Back to Products Page
+        Back to Products Page
       </Link>
 
       <section className="mt-6 grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
@@ -95,11 +95,10 @@ export default function ProductPage() {
                 key={image}
                 type="button"
                 onClick={() => setSelectedImageIndex(index)}
-                className={`overflow-hidden rounded-3xl border bg-white transition ${
-                  selectedImageIndex === index
-                    ? "border-indigo-500 ring-2 ring-indigo-200"
-                    : "border-slate-200 hover:border-indigo-300"
-                }`}
+                className={`overflow-hidden rounded-3xl border bg-white transition ${selectedImageIndex === index
+                  ? "border-indigo-500 ring-2 ring-indigo-200"
+                  : "border-slate-200 hover:border-indigo-300"
+                  }`}
               >
                 <img src={image} alt={product.name} className="aspect-[4/5] w-full object-cover" />
               </button>
@@ -111,13 +110,22 @@ export default function ProductPage() {
           <div className="rounded-[2rem] border border-slate-200 bg-white p-7 shadow-sm shadow-slate-100">
             <div className="flex items-center justify-between gap-4">
               <p className="text-sm uppercase tracking-[0.3em] text-indigo-500">{product.brand}</p>
-              <button
-                type="button"
-                onClick={() => sellersSection.current?.scrollIntoView({ behavior: "smooth" })}
-                className="rounded-full bg-indigo-600 px-6 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500"
-              >
-                Buy
-              </button>
+              <div className="flex items-center gap-2">
+
+                <button
+                  type="button"
+                  onClick={() => sellersSection.current?.scrollIntoView({ behavior: "smooth" })}
+                  className="rounded-full bg-indigo-600 px-6 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500"
+                >
+                  Buy
+                </button>
+                <button
+                  type="button"
+                  className="rounded-full bg-gray-400 px-6 py-2 text-sm font-semibold text-white transition hover:bg-gray-500"
+                >
+                  Sell
+                </button>
+              </div>
             </div>
             <h1 className="mt-3 text-4xl font-semibold text-slate-900">{product.name}</h1>
             <p className="mt-4 text-base leading-7 text-slate-600">{product.description}</p>
